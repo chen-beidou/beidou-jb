@@ -1,5 +1,4 @@
 interface:
-  display_name: "S级剧本改编与升级"
-  short_description: "诊断升级剧本，并把小说改编成高完成度的AI漫剧剧本"
-  default_prompt: "使用 $beidou-jb 检查并升级这份剧本，或把小说改编成可制作的短剧剧本。"
-
+  display_name: "北斗小说与剧本创作"
+  short_description: "从零创作、改编、诊断及公平评分中文小说与多体例剧本"
+  default_prompt: "使用 $beidou-jb 创作、续写、改编、诊断或公平评分这份中文小说或剧本。"

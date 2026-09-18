@@ -19,8 +19,30 @@ AI_PHRASES = [
 WEAK_ENDINGS = ["未完待续", "欲知后事", "他震惊了", "她震惊了", "所有人都惊呆了"]
 EMOJI_RE = re.compile(r"[\U0001F300-\U0001FAFF]")
 EPISODE_RE = re.compile(r"(?m)^\s*第\s*\d+\s*集")
-SCENE_RE = re.compile(r"(?m)^\s*\d+[-－—]\d+\s+.+(?:内|外).*(?:日|夜)")
+SCENE_RE = re.compile(
+    r"(?m)^\s*(?:\d+[-－—]\d+|\d+[.．、]?)\s+"
+    r"(?:(?:内景|外景)\s+.+|.+\s+(?:内|外))"
+    r".*(?:日|夜|晨|昏|黎明|黄昏)\s*$"
+)
 DIALOGUE_RE = re.compile(r"(?m)^\s*([\u4e00-\u9fffA-Za-z·]{1,12})\s*[：:]\s*(.+)$")
+
+METADATA_LABELS = {
+    "剧名", "片名", "题材", "类型", "画幅", "时长", "预计时长", "单集时长",
+    "集名", "本集核心冲突", "本集情绪兑现", "核心冲突", "情绪兑现",
+    "出场", "人物", "地点", "时间", "场景", "幕", "场", "备注", "说明",
+}
+
+
+def extract_dialogue(text: str) -> list[tuple[str, str]]:
+    """Return likely dialogue while excluding project and scene metadata."""
+    dialogue: list[tuple[str, str]] = []
+    for speaker, line in DIALOGUE_RE.findall(text):
+        speaker = speaker.strip()
+        line = line.strip()
+        if speaker in METADATA_LABELS or not line:
+            continue
+        dialogue.append((speaker, line))
+    return dialogue
 
 
 def audit(text: str) -> dict:
@@ -44,7 +66,7 @@ def audit(text: str) -> dict:
     if scenes == 0:
         findings.append({"severity": "warning", "type": "missing_scene_headers", "count": 1})
 
-    dialogue = DIALOGUE_RE.findall(text)
+    dialogue = extract_dialogue(text)
     long_dialogue = [(speaker, line.strip()) for speaker, line in dialogue if len(line.strip()) > 80]
     for speaker, line in long_dialogue[:10]:
         findings.append({
@@ -101,4 +123,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
