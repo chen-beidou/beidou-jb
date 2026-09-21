@@ -43,6 +43,17 @@ class SkillIntegrityTests(unittest.TestCase):
         for required in ["N/A", "证据不足", "证据覆盖率", "置信度", "小说量表", "通用剧本量表"]:
             self.assertIn(required, text)
 
+    def test_korean_story_structure_keeps_chinese_format(self):
+        text = (ROOT / "references" / "script-format.md").read_text(encoding="utf-8")
+        for required in [
+            "韩式结构、中文格式不变",
+            "1-1 地点 内/外 日/夜",
+            "不自动增加 `S#`",
+            "动作行继续以 `△` 开头",
+            "人物：“对白。”",
+        ]:
+            self.assertIn(required, text)
+
 
 if __name__ == "__main__":
     unittest.main()
